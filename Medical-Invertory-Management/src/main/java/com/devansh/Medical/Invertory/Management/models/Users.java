@@ -1,10 +1,9 @@
-package com.devansh.Medical.Invertory.Management.model;
+package com.devansh.Medical.Invertory.Management.models;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CurrentTimestamp;
 
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +28,10 @@ public class Users {
     String password;
     @CurrentTimestamp
     LocalDate creationDate;
-    boolean isBlocked = true;
+    boolean isBlocked = false;
     boolean isWaiting = true;
+    String number;
+    String pincode;
     @ElementCollection(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

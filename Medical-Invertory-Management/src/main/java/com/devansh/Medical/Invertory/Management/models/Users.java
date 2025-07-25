@@ -1,5 +1,9 @@
 package com.devansh.Medical.Invertory.Management.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CurrentTimestamp;
@@ -16,26 +20,31 @@ import static jakarta.persistence.GenerationType.SEQUENCE;
 @Builder
 @Entity
 @Table(name = "users")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Users {
     @GeneratedValue(strategy = SEQUENCE)
     @Id
-    int id;
+    private int id;
     @NonNull
-    String name;
     @Column(unique = true)
-    String email;
+    private String name;
+    @Column(unique = true)
+    private String email;
     @NonNull
-    String password;
+    private String password;
     @CurrentTimestamp
-    LocalDate creationDate;
-    boolean isBlocked = false;
-    boolean isWaiting = true;
-    String number;
-    String pincode;
+    private LocalDate creationDate;
+    private boolean isBlocked = false;
+    private boolean isWaiting = true;
+    private String number;
+    private String pincode;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+//    @JsonManagedReference("order-user")
+    private List<Orders> orders = new ArrayList<>();
     @ElementCollection(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"))
             @Enumerated(EnumType.STRING)
-    List<Roles> role = new ArrayList<>();
+    private List<Roles> role = new ArrayList<>();
 }

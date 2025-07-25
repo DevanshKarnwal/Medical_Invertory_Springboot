@@ -1,9 +1,11 @@
 package com.devansh.Medical.Invertory.Management.service;
 
 import com.devansh.Medical.Invertory.Management.models.Inventory;
+import com.devansh.Medical.Invertory.Management.models.Orders;
 import com.devansh.Medical.Invertory.Management.models.Product;
 import com.devansh.Medical.Invertory.Management.models.Users;
 import com.devansh.Medical.Invertory.Management.repository.InventoryRepository;
+import com.devansh.Medical.Invertory.Management.repository.OrderRepository;
 import com.devansh.Medical.Invertory.Management.repository.ProductRepository;
 import com.devansh.Medical.Invertory.Management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +26,11 @@ public class AdminService {
     private UserRepository userRepository;
     @Autowired
     private InventoryRepository inventoryRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
     public List<Users> getAllUsers() {
-        return null;
+        return userRepository.findAll();
     }
     @Transactional
     public Optional<Users> approveUser(int id) {
@@ -63,12 +68,34 @@ public class AdminService {
         return ResponseEntity.status(HttpStatus.OK).body(fetchedProduct);
     }
 
+    public ResponseEntity getSpecificProduct(int id) {
+        Optional<Product> fetchedProduct = productRepository.findById(id);
+        if(fetchedProduct.isEmpty())
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empty");
+        return ResponseEntity.status(HttpStatus.OK).body(fetchedProduct.get());
+    }
 
+    @Transactional
+    public ResponseEntity updateProduct(Product newProduct) {
+        Optional<Product> current = productRepository.findById(newProduct.getId());
+        if(current.isEmpty())
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+        Product product = current.get();
+        product.setName(newProduct.getName());
+        product.setCategory(newProduct.getCategory());
+        product.setPrice(newProduct.getPrice());
+        productRepository.save(product);
+        return ResponseEntity.ok("Product updated successfully");
+    }
 
+    public ResponseEntity deleteProduct(int id){
+            productRepository.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Deleted");
+    }
 
     public ResponseEntity addToInventory(Inventory inventory) {
         inventoryRepository.save(inventory);
-        return ResponseEntity.status(HttpStatus.OK).body("Product created");
+        return ResponseEntity.status(HttpStatus.OK).body("Inventory created");
     }
 
     public ResponseEntity getInventory() {
@@ -76,5 +103,77 @@ public class AdminService {
         if(fetchedInventory.isEmpty())
                 return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empty");
         return ResponseEntity.status(HttpStatus.OK).body(fetchedInventory);
+    }
+
+
+    public ResponseEntity getSpecificInventory(int id) {
+        Optional<Inventory> fetchedInventory = inventoryRepository.findById(id);
+        if(fetchedInventory.isEmpty())
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empty");
+        return ResponseEntity.status(HttpStatus.OK).body(fetchedInventory.get());
+    }
+
+    @Transactional
+    public ResponseEntity updateInventory(Inventory newInventory) {
+        try {
+            Optional<Inventory> current = inventoryRepository.findById(newInventory.getId());
+
+            if(current.isEmpty())
+                return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+            Optional<Inventory> existing = inventoryRepository.findByProduct(newInventory.getProduct());
+            if (existing.isPresent() && existing.get().getId() != newInventory.getId()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Inventory for this product already exists");
+            }
+            Inventory inventory = current.get();
+            inventory.setQuantity(newInventory.getQuantity());
+
+            inventoryRepository.save(inventory);
+            return ResponseEntity.ok("Inventory updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product already exists");
+        }
+    }
+    public ResponseEntity<List<Orders>> getAllOrders(){
+            List<Orders> fetchOrder = orderRepository.findAll();
+            if(fetchOrder.isEmpty())
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+            fetchOrder = fetchOrder.stream().filter(order -> !order.isApproved()).toList();
+            return ResponseEntity.status(HttpStatus.OK).body(fetchOrder);
+    }
+
+
+
+    public ResponseEntity deleteOrders(int id) {
+        orderRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Order deleted");
+    }
+
+    @Transactional
+    public ResponseEntity approveOrder(int id) {
+        Optional<Orders> fetchedOrder = orderRepository.findById(id);
+        if (fetchedOrder.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+        }
+        Orders currentOrder = fetchedOrder.get();
+        Product product = currentOrder.getProduct();
+        int quantity = currentOrder.getQuantity();
+        Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
+
+        if (inventoryOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Inventory not found for product: " + product.getName());
+        }
+        Inventory inventory = inventoryOptional.get();
+
+        if (inventory.getQuantity() < quantity) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not enough inventory to approve the order");
+        }
+        inventory.setQuantity(inventory.getQuantity() - quantity);
+        currentOrder.setApproved(true);
+        inventoryRepository.save(inventory);
+        orderRepository.save(currentOrder);
+
+        return ResponseEntity.ok("Order approved successfully");
+
     }
 }

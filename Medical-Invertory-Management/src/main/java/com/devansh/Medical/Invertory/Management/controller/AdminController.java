@@ -56,9 +56,23 @@ public class AdminController {
         return adminService.addProduct(product);
     }
 
-    @GetMapping("/product")
+    @GetMapping("/products")
     public ResponseEntity<List<Product>> getAllProducts(){
        return adminService.getAllProducts();
+    }
+    @GetMapping("/product/{id}")
+    public ResponseEntity getSpecificProduct(@PathVariable("id") int id){
+        return adminService.getSpecificProduct(id);
+    }
+
+    @PutMapping("/product")
+    public ResponseEntity updateProduct(@RequestBody Product product){
+            return adminService.updateProduct(product);
+    }
+
+    @DeleteMapping("/product/{id}")
+    public ResponseEntity deleteProduct(@PathVariable("id") int id){
+            return adminService.deleteProduct(id);
     }
 
     @PostMapping("/inventory")
@@ -66,12 +80,34 @@ public class AdminController {
         return adminService.addToInventory(inventory);
     }
 
-    @GetMapping("/inventory")
+    @GetMapping("/inventories")
     public ResponseEntity<List<Inventory>> getInventory(){
         return adminService.getInventory();
-
     }
 
+    @GetMapping("/inventory/{id}")
+    public ResponseEntity getSpecificInventory(@PathVariable("id") int id){
+        return adminService.getSpecificInventory(id);
+    }
+    @PutMapping("/inventory")
+    public ResponseEntity updateInventory(@RequestBody Inventory inventory){
+        return adminService.updateInventory(inventory);
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity getAllOrders(){
+        return adminService.getAllOrders();
+    }
+
+    @DeleteMapping("/orders/{id}")
+    public ResponseEntity rejectOrder(@PathVariable("id") int id){
+        return adminService.deleteOrders(id);
+    }
+
+    @PutMapping("/orders/{id}")
+    public ResponseEntity approveOrder(@PathVariable("id") int id){
+        return adminService.approveOrder(id);
+    }
 
 
 }

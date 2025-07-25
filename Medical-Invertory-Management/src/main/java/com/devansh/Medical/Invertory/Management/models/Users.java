@@ -14,6 +14,7 @@ import java.util.List;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -8,8 +8,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CurrentTimestamp;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+
 
 @Data
 @NoArgsConstructor

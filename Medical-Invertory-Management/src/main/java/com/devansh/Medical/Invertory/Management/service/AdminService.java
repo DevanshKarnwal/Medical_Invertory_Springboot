@@ -1,13 +1,7 @@
 package com.devansh.Medical.Invertory.Management.service;
 
-import com.devansh.Medical.Invertory.Management.models.Inventory;
-import com.devansh.Medical.Invertory.Management.models.Orders;
-import com.devansh.Medical.Invertory.Management.models.Product;
-import com.devansh.Medical.Invertory.Management.models.Users;
-import com.devansh.Medical.Invertory.Management.repository.InventoryRepository;
-import com.devansh.Medical.Invertory.Management.repository.OrderRepository;
-import com.devansh.Medical.Invertory.Management.repository.ProductRepository;
-import com.devansh.Medical.Invertory.Management.repository.UserRepository;
+import com.devansh.Medical.Invertory.Management.models.*;
+import com.devansh.Medical.Invertory.Management.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +22,8 @@ public class AdminService {
     private InventoryRepository inventoryRepository;
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private UserStockRepository userStockRepository;
 
     public List<Users> getAllUsers() {
         return userRepository.findAll();
@@ -173,6 +169,8 @@ public class AdminService {
         inventoryRepository.save(inventory);
         orderRepository.save(currentOrder);
 
+        UserStock toAdd = UserStock.builder().quantity(quantity).product(product).build();
+        userStockRepository.save(toAdd);
         return ResponseEntity.ok("Order approved successfully");
 
     }

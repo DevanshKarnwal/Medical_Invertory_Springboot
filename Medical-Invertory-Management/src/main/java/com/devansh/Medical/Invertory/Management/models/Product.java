@@ -9,9 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Data
 @NoArgsConstructor
@@ -35,5 +37,7 @@ public class Product {
     @OneToOne(mappedBy = "product",cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JsonManagedReference("product-inventory")
     private Inventory inventory;
+    @OneToOne(mappedBy = "product",cascade = {CascadeType.MERGE},orphanRemoval = true)
+    private UserStock userStock;
 
 }

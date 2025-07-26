@@ -1,9 +1,6 @@
 package com.devansh.Medical.Invertory.Management.service;
 
-import com.devansh.Medical.Invertory.Management.models.Orders;
-import com.devansh.Medical.Invertory.Management.models.SalesHistory;
-import com.devansh.Medical.Invertory.Management.models.UserStock;
-import com.devansh.Medical.Invertory.Management.models.Users;
+import com.devansh.Medical.Invertory.Management.models.*;
 import com.devansh.Medical.Invertory.Management.repository.OrderRepository;
 import com.devansh.Medical.Invertory.Management.repository.SalesHistoryRepository;
 import com.devansh.Medical.Invertory.Management.repository.UserRepository;
@@ -11,9 +8,11 @@ import com.devansh.Medical.Invertory.Management.repository.UserStockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,13 +31,24 @@ public class UserService {
     @Autowired
     private SalesHistoryRepository salesHistoryRepository;
 
-    public void addUser(Users user){
-        userRepository.save(user);
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public ResponseEntity updateUser(Users newUser, int id){
+
+    public ResponseEntity createUser(Users user) {
+        Users fetched = userRepository.findByName(user.getName());
+        if(fetched != null)
+            return ResponseEntity.status(HttpStatus.FOUND).body("User name already exists");
+        else{
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRole(Arrays.asList(Roles.USER));
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("User Created");
+        }
+    }
+    public ResponseEntity updateUser(Users newUser){
         try {
-            Optional<Users> current = userRepository.findById(id);
+            Optional<Users> current = userRepository.findById(newUser.getId());
             if(current.isEmpty())
                 return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
             Users user = current.get();
@@ -106,4 +116,6 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Inventory is Empty");
         return ResponseEntity.status(HttpStatus.OK).body(fetchedSalesHistory);
     }
+
+
 }

@@ -18,14 +18,9 @@ public class UserController {
     @Autowired
     private AdminService adminService;
 
-    @PostMapping()
-    public void addUser(@RequestBody() Users user) {
-        userService.addUser(user);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity updateUser(@RequestBody() Users user, @PathVariable("id") int id) {
-        return userService.updateUser(user, id);
+    @PutMapping()
+    public ResponseEntity updateUser(@RequestBody() Users user) {
+        return userService.updateUser(user);
     }
 
     @DeleteMapping()

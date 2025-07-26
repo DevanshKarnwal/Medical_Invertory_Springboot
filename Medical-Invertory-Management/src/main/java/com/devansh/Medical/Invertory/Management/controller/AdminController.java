@@ -2,11 +2,15 @@ package com.devansh.Medical.Invertory.Management.controller;
 
 import com.devansh.Medical.Invertory.Management.models.Inventory;
 import com.devansh.Medical.Invertory.Management.models.Product;
+import com.devansh.Medical.Invertory.Management.models.SalesHistory;
 import com.devansh.Medical.Invertory.Management.models.Users;
+import com.devansh.Medical.Invertory.Management.repository.UserStockRepository;
 import com.devansh.Medical.Invertory.Management.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -19,6 +23,9 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private UserStockRepository userStockRepository;
 
     @GetMapping("/users")
     public ResponseEntity<List<Users>> getAllUsers(){
@@ -104,8 +111,17 @@ public class AdminController {
         return adminService.deleteOrders(id);
     }
 
+    @Transactional
     @PutMapping("/orders/{id}")
     public ResponseEntity approveOrder(@PathVariable("id") int id){
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        SalesHistory salesHistory = SalesHistory.builder()
+                .userName(userName)
+                .price(0)
+                .purchased(true)
+                .quantity(userStockRepository.findById(id).get().getQuantity())
+                .productName(userStockRepository.findById(id).get().getProduct().getName())
+                .build();
         return adminService.approveOrder(id);
     }
 

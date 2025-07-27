@@ -11,13 +11,13 @@ class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
 
     suspend fun loginUser(name: String, password: String): ResultState<String> {
         val response = apiServices.loginUser(LoginRequest(name, password))
-        Log.d("loginerror", " ${response.code()} ${response.toString()}")
         return if (response.code() == HttpURLConnection.HTTP_OK) {
             ResultState.Success(response.body() ?: "User found")
         } else {
-            Log.d("loginerror" , "Login failed: ${response.errorBody()?.string() ?: response.message()} ${response.toString()}")
             ResultState.Error("Login failed: ${response.errorBody()?.string() ?: response.message()} ${response.toString()}")
         }
     }
+
+
 
 }

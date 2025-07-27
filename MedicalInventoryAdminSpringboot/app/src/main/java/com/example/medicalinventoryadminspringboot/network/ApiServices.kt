@@ -13,9 +13,11 @@ import retrofit2.http.Query
 
 interface ApiServices {
 
-    @POST("/public/loginUser")
+    @POST("public/loginUser")
     suspend fun loginUser(
         @Body request: LoginRequest
     ): Response<String>
+
+
 
 }

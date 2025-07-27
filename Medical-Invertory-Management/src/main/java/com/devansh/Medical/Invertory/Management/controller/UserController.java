@@ -38,8 +38,8 @@ public class UserController {
         return userService.updateStock(userStock);
     }
 
-    @DeleteMapping("/stock/{id}")
-    public ResponseEntity deleteStock(@PathVariable("id") int id) {
+    @DeleteMapping("/stock")
+    public ResponseEntity deleteStock(@RequestParam int id) {
         return userService.deleteUserStock(id);
     }
 
@@ -53,8 +53,8 @@ public class UserController {
         return userService.addOrder(order);
     }
 
-    @DeleteMapping("/order/{id}")
-    public ResponseEntity deleteOrder(@PathVariable("id") int id){
+    @DeleteMapping("/order")
+    public ResponseEntity deleteOrder(@RequestParam int id){
         return adminService.deleteOrders(id);
     }
 

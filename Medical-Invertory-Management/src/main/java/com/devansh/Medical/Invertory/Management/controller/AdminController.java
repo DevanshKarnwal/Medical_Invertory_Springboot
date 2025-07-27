@@ -41,23 +41,23 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(usersFetched);
     }
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity getSpecificUser(@PathVariable("id") int id){
+    @GetMapping("/user")
+    public ResponseEntity getSpecificUser(@RequestParam int id){
         Optional<Users> usersFetched = adminService.getSpecificUser(id);
         if(usersFetched.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
         return ResponseEntity.status(HttpStatus.OK).body(usersFetched.get());
     }
-    @PostMapping("/userApprove/{id}")
-    public ResponseEntity approveUser(@PathVariable("id") int id){
+    @PostMapping("/userApprove")
+    public ResponseEntity approveUser(@RequestParam int id){
         Optional<Users> usersFetched = adminService.approveUser(id);
         if(usersFetched.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
         return ResponseEntity.status(HttpStatus.OK).body("Approved");
     }
 
-    @PostMapping("/userBlock/{id}")
-    public ResponseEntity blockUser(@PathVariable("id") int id){
+    @PostMapping("/userBlock")
+    public ResponseEntity blockUser(@RequestParam int id){
         Optional<Users> usersFetched = adminService.blockUser(id);
         if(usersFetched.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
@@ -73,8 +73,8 @@ public class AdminController {
     public ResponseEntity<List<Product>> getAllProducts(){
        return adminService.getAllProducts();
     }
-    @GetMapping("/product/{id}")
-    public ResponseEntity getSpecificProduct(@PathVariable("id") int id){
+    @GetMapping("/product")
+    public ResponseEntity getSpecificProduct(@RequestParam int id){
         return adminService.getSpecificProduct(id);
     }
 
@@ -83,8 +83,8 @@ public class AdminController {
             return adminService.updateProduct(product);
     }
 
-    @DeleteMapping("/product/{id}")
-    public ResponseEntity deleteProduct(@PathVariable("id") int id){
+    @DeleteMapping("/product")
+    public ResponseEntity deleteProduct(@RequestParam int id){
             return adminService.deleteProduct(id);
     }
 
@@ -98,8 +98,8 @@ public class AdminController {
         return adminService.getInventory();
     }
 
-    @GetMapping("/inventory/{id}")
-    public ResponseEntity getSpecificInventory(@PathVariable("id") int id){
+    @GetMapping("/inventory")
+    public ResponseEntity getSpecificInventory(@RequestParam int id){
         return adminService.getSpecificInventory(id);
     }
     @PutMapping("/inventory")
@@ -112,14 +112,14 @@ public class AdminController {
         return adminService.getAllOrders();
     }
 
-    @DeleteMapping("/orders/{id}")
-    public ResponseEntity rejectOrder(@PathVariable("id") int id){
+    @DeleteMapping("/orders")
+    public ResponseEntity rejectOrder(@RequestParam int id){
         return adminService.deleteOrders(id);
     }
 
     @Transactional
-    @PutMapping("/orders/{id}")
-    public ResponseEntity approveOrder(@PathVariable("id") int id){
+    @PutMapping("/orders")
+    public ResponseEntity approveOrder(@RequestParam int id){
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         SalesHistory salesHistory = SalesHistory.builder()
                 .userName(userName)

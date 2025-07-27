@@ -1,5 +1,6 @@
 package com.example.medicalinventoryadminspringboot.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,6 +39,16 @@ fun LogInScreen(adminViewModel: AdminViewModel = hiltViewModel<AdminViewModel>()
 
     var name by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var context = LocalContext.current;
+    var logInview = adminViewModel.loginView.collectAsState()
+    when{
+        logInview.value.isSuccessful.isNotEmpty() -> {
+            Toast.makeText(context, logInview.value.isSuccessful, Toast.LENGTH_LONG).show()
+        }
+        logInview.value.isError.isNotEmpty() -> {
+            Toast.makeText(context, logInview.value.isError, Toast.LENGTH_LONG).show()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -98,7 +111,9 @@ fun LogInScreen(adminViewModel: AdminViewModel = hiltViewModel<AdminViewModel>()
             )
 
             Button(
-                onClick = { /* Handle login */ },
+                onClick = {
+                    adminViewModel.loginUser(name,password)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

@@ -16,13 +16,14 @@ public class PublicController {
     private UserService userService;
 
     @PostMapping("/createUser")
-    public ResponseEntity createUser(@RequestBody() Users user){
+    public ResponseEntity createUser(@RequestBody() Users user) {
 
         return userService.createUser(user);
     }
-    @PostMapping("/loginUser")
-    public ResponseEntity loginUser(@RequestBody() LoginRequest loginRequest){
 
-        return userService.loginUser(loginRequest);
+    @PostMapping("/loginUser")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
+        return userService.loginUser(request.getName(), request.getPassword());
     }
+
 }

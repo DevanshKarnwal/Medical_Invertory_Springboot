@@ -57,17 +57,16 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.OK).body("User Created");
         }
     }
-    public ResponseEntity loginUser(LoginRequest loginRequest) {
+    public ResponseEntity loginUser(String userName, String password ) {
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getName(),
-                            loginRequest.getPassword()
+                            userName,
+                            password
                     )
             );
-
             SecurityContextHolder.getContext().setAuthentication(auth);
-            return ResponseEntity.ok("Login successful");
+            return ResponseEntity.status(HttpStatus.OK).body("Login successful");
         } catch (AuthenticationException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed: " + ex.getMessage());
         }

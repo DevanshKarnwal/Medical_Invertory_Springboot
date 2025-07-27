@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.devansh</groupId>
-	<artifactId>Medical-Invertory-Management</artifactId>
+	<artifactId>Medical-Inventory-Management</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Medical-Invertory-Management</name>
 	<description>project for Spring Boot backend</description>

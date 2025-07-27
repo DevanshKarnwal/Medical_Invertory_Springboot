@@ -48,6 +48,12 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found");
         return ResponseEntity.status(HttpStatus.OK).body(usersFetched.get());
     }
+
+    @GetMapping("/userName")
+    public ResponseEntity getSpecificUserByName(@RequestParam String name){
+        return adminService.getSpecificUserByName(name);
+    }
+
     @PostMapping("/userApprove")
     public ResponseEntity approveUser(@RequestParam int id){
         Optional<Users> usersFetched = adminService.approveUser(id);

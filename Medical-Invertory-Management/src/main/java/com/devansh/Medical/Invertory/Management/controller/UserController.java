@@ -18,6 +18,11 @@ public class UserController {
     @Autowired
     private AdminService adminService;
 
+    @GetMapping("/userName")
+    public ResponseEntity getSpecificUserByName(@RequestParam String name){
+        return adminService.getSpecificUserByName(name);
+    }
+
     @PutMapping()
     public ResponseEntity updateUser(@RequestBody() Users user) {
         return userService.updateUser(user);

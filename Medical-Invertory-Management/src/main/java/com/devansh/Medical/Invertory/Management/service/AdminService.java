@@ -37,6 +37,10 @@ public class AdminService {
     public List<Users> getAllUsers() {
         return userRepository.findAll();
     }
+    public ResponseEntity getSpecificUserByName(String name) {
+        Users byName = userRepository.findByName(name);
+        return ResponseEntity.status(HttpStatus.OK).body(byName);
+    }
     public ResponseEntity createAdminUser(Users user) {
         Users fetched = userRepository.findByName(user.getName());
         if(fetched != null)
@@ -194,6 +198,7 @@ public class AdminService {
         return ResponseEntity.ok("Order approved successfully");
 
     }
+
 
 
 }

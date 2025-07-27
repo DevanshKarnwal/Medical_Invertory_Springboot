@@ -1,14 +1,28 @@
-# Use a base image with Java
-FROM openjdk:17
+# Use Maven to build the project
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 # Set working directory
 WORKDIR /app
 
-# Copy the JAR file into the image
-COPY target/Medical-Inventory-Management-0.0.1-SNAPSHOT.jar app.jar
+# Copy pom and source files
+COPY . .
 
-# Expose the port the Spring Boot app runs on
+# Build the project and skip tests
+RUN mvn clean package -DskipTests
+
+# --------------------------
+
+# Second stage: actual runtime image
+FROM openjdk:17-jdk-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy the JAR from the build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose port
 EXPOSE 8080
 
-# Run the JAR
-CMD ["java", "-jar", "app.jar"]
+# Run the app
+ENTRYPOINT ["java", "-jar", "app.jar"]

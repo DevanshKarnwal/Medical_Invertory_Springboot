@@ -5,9 +5,12 @@ import com.devansh.Medical.Invertory.Management.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +28,25 @@ public class AdminService {
     @Autowired
     private UserStockRepository userStockRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     public List<Users> getAllUsers() {
         return userRepository.findAll();
+    }
+    public ResponseEntity createAdminUser(Users user) {
+        Users fetched = userRepository.findByName(user.getName());
+        if(fetched != null)
+            return ResponseEntity.status(HttpStatus.FOUND).body("User name already exists");
+        else{
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRole(Arrays.asList(Roles.USER,Roles.ADMIN));
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("User Created");
+        }
     }
     @Transactional
     public Optional<Users> approveUser(int id) {
@@ -174,4 +194,6 @@ public class AdminService {
         return ResponseEntity.ok("Order approved successfully");
 
     }
+
+
 }

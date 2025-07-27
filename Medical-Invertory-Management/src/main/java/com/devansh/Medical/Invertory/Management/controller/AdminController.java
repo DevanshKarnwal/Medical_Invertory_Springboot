@@ -27,6 +27,12 @@ public class AdminController {
     @Autowired
     private UserStockRepository userStockRepository;
 
+    @PostMapping("/createUser")
+    public ResponseEntity createAdminUser(@RequestBody() Users user){
+
+        return adminService.createAdminUser(user);
+    }
+
     @GetMapping("/users")
     public ResponseEntity<List<Users>> getAllUsers(){
         List<Users> usersFetched = adminService.getAllUsers();

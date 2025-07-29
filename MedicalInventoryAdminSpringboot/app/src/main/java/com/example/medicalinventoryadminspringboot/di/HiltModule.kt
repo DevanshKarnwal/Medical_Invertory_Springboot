@@ -1,7 +1,9 @@
 package com.example.medicalinventoryadminspringboot.di
 
+import androidx.navigation.NavController
 import com.example.medicalinventoryadminspringboot.network.ApiProvider
 import com.example.medicalinventoryadminspringboot.network.ApiServices
+import com.example.medicalinventoryadminspringboot.ui.Navigation
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,4 +16,7 @@ object HiltModule {
     fun provideApiServices(): ApiServices {
         return ApiProvider.provideApi;
     }
+
+
+
 }

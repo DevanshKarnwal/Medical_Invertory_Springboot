@@ -32,15 +32,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.medicalinventoryadminspringboot.viewModel.AdminViewModel
 
 @Composable
-fun LogInScreen(adminViewModel: AdminViewModel = hiltViewModel<AdminViewModel>()) {
+fun LogInScreen(
+    adminViewModel: AdminViewModel = hiltViewModel<AdminViewModel>(),
+    navController: NavHostController
+) {
 
     var name by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var context = LocalContext.current;
     var logInview = adminViewModel.loginView.collectAsState()
+    var adminView = adminViewModel.adminUser.collectAsState()
     when{
         logInview.value.isSuccessful.isNotEmpty() -> {
             Toast.makeText(context, logInview.value.isSuccessful, Toast.LENGTH_LONG).show()
@@ -48,6 +53,9 @@ fun LogInScreen(adminViewModel: AdminViewModel = hiltViewModel<AdminViewModel>()
         logInview.value.isError.isNotEmpty() -> {
             Toast.makeText(context, logInview.value.isError, Toast.LENGTH_LONG).show()
         }
+    }
+    when{
+        adminView.value.isSuccessful.name.length>1 -> navController.navigate(Routes.Dashboard)
     }
 
     Box(

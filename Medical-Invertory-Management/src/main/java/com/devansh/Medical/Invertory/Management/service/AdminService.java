@@ -84,7 +84,7 @@ public class AdminService {
     public ResponseEntity getAllProducts() {
         List<Product> fetchedProduct = productRepository.findAll();
         if(fetchedProduct.isEmpty())
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empty");
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
         return ResponseEntity.status(HttpStatus.OK).body(fetchedProduct);
     }
 
@@ -121,7 +121,7 @@ public class AdminService {
     public ResponseEntity getInventory() {
         List<Inventory> fetchedInventory = inventoryRepository.findAll();
         if(fetchedInventory.isEmpty())
-                return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empty");
+                return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
         return ResponseEntity.status(HttpStatus.OK).body(fetchedInventory);
     }
 

@@ -108,6 +108,10 @@ public class AdminController {
     public ResponseEntity getSpecificInventory(@RequestParam int id){
         return adminService.getSpecificInventory(id);
     }
+    @GetMapping("/inventoryProduct")
+    public ResponseEntity getSpecificInventoryByProduct(@RequestParam int id){
+        return adminService.getSpecificInventoryByProduct(id);
+    }
     @PutMapping("/inventory")
     public ResponseEntity updateInventory(@RequestBody Inventory inventory){
         return adminService.updateInventory(inventory);

@@ -200,5 +200,9 @@ public class AdminService {
     }
 
 
-
+    public ResponseEntity getSpecificInventoryByProduct(int id) {
+        Optional<Product> fetchedProduct = productRepository.findById(id);
+        Optional<Inventory> existing = inventoryRepository.findByProduct(fetchedProduct.get());
+        return ResponseEntity.status(HttpStatus.OK).body(existing.get());
+    }
 }

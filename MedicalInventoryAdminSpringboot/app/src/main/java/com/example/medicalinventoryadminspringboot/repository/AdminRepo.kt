@@ -11,6 +11,7 @@ import com.example.medicalinventoryadminspringboot.network.ApiServices
 import jakarta.inject.Inject
 import okhttp3.Response
 import java.net.HttpURLConnection
+import java.sql.Time
 
 class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
 
@@ -29,48 +30,49 @@ class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
 
     suspend fun getAdminUser(name: String): ResultState<Users> {
         val response = apiServices.getAdminUser(name);
-        Log.d("admin123","${response.toString()} aaa ${response.isSuccessful.toString()}")
+        Log.d("admin123", "${response.toString()} aaa ${response.isSuccessful.toString()}")
         return ResultState.Success(
             response.body() ?: Users(
-                0,
-                "",
-                "",
-                "",
-                java.sql.Time(0),
-                false,
-                false,
-                "",
-                "",
-                emptyList()
+                0, "", "", "", Time(0), false, false, "", "", emptyList()
             )
         );
     }
+
     suspend fun getAllUser(): ResultState<List<Users>> {
         try {
             val response = apiServices.getAllUser()
             return ResultState.Success(response.body() ?: emptyList())
+        } catch (e: Exception) {
+            return ResultState.Error(e.message ?: "Unknown error occurred")
         }
-       catch (e:Exception){
-           return ResultState.Error(e.message ?: "Unknown error occurred")
-       }
     }
+
     suspend fun getAllProducts(): ResultState<List<Product>> {
         try {
             val response = apiServices.getAllProducts()
-            Log.d("product123","${response.isSuccessful}  ${response.body()}")
+            Log.d("product123", "${response.isSuccessful}  ${response.body()}")
             return ResultState.Success(response.body() ?: emptyList())
-        }
-        catch (e:Exception){
+        } catch (e: Exception) {
             return ResultState.Error(e.message ?: "Unknown error occurred")
         }
+    }
+
+    suspend fun getSpecificProduct(id: Int): ResultState<Product> {
+        try {
+            val response = apiServices.getSpecificProduct(id.toString())
+            return ResultState.Success(response.body() ?: Product(0,
+                "", "", 0.0, ""))
+        } catch (e: Exception) {
+            return ResultState.Error(e.message ?: "Unknown error occurred")
+        }
+
     }
 
     suspend fun getAllInventories(): ResultState<List<Inventory>> {
         try {
             val response = apiServices.getAllInventories()
             return ResultState.Success(response.body() ?: emptyList())
-        }
-        catch (e:Exception){
+        } catch (e: Exception) {
             return ResultState.Error(e.message ?: "Unknown error occurred")
         }
 
@@ -80,11 +82,35 @@ class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
         try {
             val response = apiServices.getAllOrders()
             return ResultState.Success(response.body() ?: emptyList())
-        }
-        catch (e:Exception){
+        } catch (e: Exception) {
             return ResultState.Error(e.message ?: "Unknown error occurred")
         }
     }
 
+    suspend fun getInventoryByProductId(id: Int): ResultState<Inventory> {
+        try {
+            val response = apiServices.getInventoryByProductId(id.toString())
+            return ResultState.Success(response.body() ?: Inventory(0, 0, 0))
+        } catch (e: Exception) {
+            return ResultState.Error(e.message ?: "Unknown error occurred")
+        }
+
+    }
+
+    suspend fun updateUserBlockAndWaiting(user: Users): ResultState<String> {
+        return try {
+            val response = apiServices.updateUser(user)
+            if (response.isSuccessful) {
+                ResultState.Success(response.body()?.string() ?: "User updated successfully")
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Unknown server error"
+                Log.e("UpdateUser", "Server error: $errorMsg")
+                ResultState.Error(errorMsg)
+            }
+        } catch (e: Exception) {
+            Log.e("UpdateUser", "Exception: ${e.message}")
+            ResultState.Error(e.message ?: "Unknown error occurred")
+        }
+    }
 
 }

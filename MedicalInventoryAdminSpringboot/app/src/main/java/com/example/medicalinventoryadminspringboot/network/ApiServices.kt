@@ -5,12 +5,14 @@ import com.example.medicalinventoryadminspringboot.model.LoginRequest
 import com.example.medicalinventoryadminspringboot.model.Order
 import com.example.medicalinventoryadminspringboot.model.Product
 import com.example.medicalinventoryadminspringboot.model.Users
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -30,11 +32,20 @@ interface ApiServices {
     @GET("admin/products")
     suspend fun getAllProducts() : Response<List<Product>>
 
+    @GET("admin/product")
+    suspend fun getSpecificProduct(@Query("id") id: String) : Response<Product>
+
     @GET("admin/inventories")
     suspend fun getAllInventories() : Response<List<Inventory>>
 
     @GET("admin/orders")
     suspend fun getAllOrders() : Response<List<Order>>
+
+    @GET("admin/inventoryProduct")
+    suspend fun getInventoryByProductId(@Query("id") id: String) : Response<Inventory>
+
+    @PUT("user")
+    suspend fun updateUser(@Body user: Users): Response<ResponseBody>
 
 
 }

@@ -8,7 +8,7 @@ data class Order(
     val isApproved: Boolean = false,
     val generationDate: Time ,
     val quantity: Int = 0,
-    val product: Int? = null,  // Only product ID
-    val user: Int? = null,     // Only user ID
+    val product: Int? = null,
+    val user: Int? = null,
     val price: Double = 0.0
 )

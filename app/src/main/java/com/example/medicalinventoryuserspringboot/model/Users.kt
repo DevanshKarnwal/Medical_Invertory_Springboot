@@ -1,0 +1,17 @@
+package com.example.medicalinventoryuserspringboot.model
+
+import java.sql.Time
+
+
+data class Users(
+    val id: Int,
+    var name: String,
+    var email: String = "",
+    var password: String,
+    val creationTime: Time?,
+    var isBlocked: Boolean,
+    var isWaiting: Boolean,
+    var number: String? = null,
+    var pincode: String? = null,
+    var role: List<Roles>
+)

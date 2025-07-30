@@ -8,6 +8,7 @@ import com.example.medicalinventoryadminspringboot.model.Users
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -40,6 +41,12 @@ interface ApiServices {
 
     @GET("admin/orders")
     suspend fun getAllOrders() : Response<List<Order>>
+
+    @PUT("admin/orders")
+    suspend fun approveOrder(@Query("id") id: Int): Response<ResponseBody>
+
+    @DELETE("admin/orders")
+    suspend fun deleteOrder(@Query("id") id: Int): Response<ResponseBody>
 
     @GET("admin/inventoryProduct")
     suspend fun getInventoryByProductId(@Query("id") id: String) : Response<Inventory>

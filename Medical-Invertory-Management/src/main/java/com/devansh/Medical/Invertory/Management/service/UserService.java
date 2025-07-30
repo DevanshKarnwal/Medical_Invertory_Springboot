@@ -81,6 +81,8 @@ public class UserService {
             user.setName(newUser.getName());
             user.setEmail(newUser.getEmail());
             user.setPassword(newUser.getPassword());
+            user.setBlocked(newUser.isBlocked());
+            user.setWaiting(newUser.isWaiting());
             userRepository.save(user);
             return ResponseEntity.ok("User updated successfully");
         } catch (Exception e) {

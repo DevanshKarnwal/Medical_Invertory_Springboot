@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.medicalinventoryadminspringboot.ResultState
 import com.example.medicalinventoryadminspringboot.model.Inventory
+import com.example.medicalinventoryadminspringboot.model.Order
 import com.example.medicalinventoryadminspringboot.model.Product
 import com.example.medicalinventoryadminspringboot.model.Users
 import com.example.medicalinventoryadminspringboot.repository.AdminRepo
@@ -22,6 +23,7 @@ import java.sql.Time
 @HiltViewModel
 class AdminViewModel @Inject constructor(val adminRepo: AdminRepo) : ViewModel() {
 
+
     private val _adminUser = MutableStateFlow(AdminInView())
     val adminUser = _adminUser.asStateFlow()
     private val _loginView = MutableStateFlow(LogInAdminView())
@@ -36,6 +38,9 @@ class AdminViewModel @Inject constructor(val adminRepo: AdminRepo) : ViewModel()
     val getInventoryByProductId = _getInventoryByProductId.asStateFlow()
     private val _getSpecificProductById = MutableStateFlow(GetSpecificProductById())
     val getSpecificProductById = _getSpecificProductById.asStateFlow()
+    private val _getAllOrders = MutableStateFlow(GetAllOrders())
+    val getAllOrders = _getAllOrders.asStateFlow()
+
 
 
     public fun loginUser(userName: String, password: String) {
@@ -205,6 +210,52 @@ class AdminViewModel @Inject constructor(val adminRepo: AdminRepo) : ViewModel()
         }
     }
 
+    fun getAllOrders() {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val result = adminRepo.getAllOrders()) {
+                is ResultState.Success -> {
+                    _getAllOrders.value = GetAllOrders(isSuccessful = result.data)
+                }
+                is ResultState.Error -> {
+                    _getAllOrders.value = GetAllOrders(isError = result.message)
+                }
+                ResultState.Loading -> {
+                    _getAllOrders.value = GetAllOrders(isError = "Loading orders...")
+                }
+            }
+        }
+    }
+
+    fun approveOrder(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val result = adminRepo.approveOrder(id)) {
+                is ResultState.Success -> {
+                    // Optionally refetch orders
+                    getAllOrders()
+                }
+                is ResultState.Error -> {
+                    _getAllOrders.value = _getAllOrders.value.copy(isError = result.message)
+                }
+                ResultState.Loading -> {}
+            }
+        }
+    }
+
+    fun deleteOrder(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val result = adminRepo.deleteOrder(id)) {
+                is ResultState.Success -> {
+                    // Optionally refetch orders
+                    getAllOrders()
+                }
+                is ResultState.Error -> {
+                    _getAllOrders.value = _getAllOrders.value.copy(isError = result.message)
+                }
+                ResultState.Loading -> {}
+            }
+        }
+    }
+
 
 }
 
@@ -242,4 +293,8 @@ data class GetInventoryByProductId(
 data class GetSpecificProductById(
     var isSuccessful: Product = Product(0, "", "", 0.0, ""),
     var isError: String = ""
+)
+data class GetAllOrders(
+    val isSuccessful: List<Order> = emptyList(),
+    val isError: String = ""
 )

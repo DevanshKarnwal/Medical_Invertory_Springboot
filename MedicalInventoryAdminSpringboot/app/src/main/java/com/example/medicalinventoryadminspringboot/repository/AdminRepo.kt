@@ -112,5 +112,37 @@ class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
             ResultState.Error(e.message ?: "Unknown error occurred")
         }
     }
+    suspend fun approveOrder(id: Int): ResultState<String> {
+        return try {
+            val response = apiServices.approveOrder(id)
+            if (response.isSuccessful) {
+                ResultState.Success(response.body()?.string() ?: "Order approved successfully")
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Server error during approval"
+                Log.e("ApproveOrder", "Server error: $errorMsg")
+                ResultState.Error(errorMsg)
+            }
+        } catch (e: Exception) {
+            Log.e("ApproveOrder", "Exception: ${e.message}")
+            ResultState.Error(e.message ?: "Unknown error during order approval")
+        }
+    }
+
+    suspend fun deleteOrder(id: Int): ResultState<String> {
+        return try {
+            val response = apiServices.deleteOrder(id)
+            if (response.isSuccessful) {
+                ResultState.Success(response.body()?.string() ?: "Order deleted successfully")
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Server error during deletion"
+                Log.e("DeleteOrder", "Server error: $errorMsg")
+                ResultState.Error(errorMsg)
+            }
+        } catch (e: Exception) {
+            Log.e("DeleteOrder", "Exception: ${e.message}")
+            ResultState.Error(e.message ?: "Unknown error during order deletion")
+        }
+    }
+
 
 }

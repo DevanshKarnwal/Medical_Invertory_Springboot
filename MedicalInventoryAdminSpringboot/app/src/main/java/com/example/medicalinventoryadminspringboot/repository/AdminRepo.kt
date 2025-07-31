@@ -1,6 +1,7 @@
 package com.example.medicalinventoryadminspringboot.repository
 
 import android.util.Log
+import com.example.medicalinventoryadminspringboot.Dto.OrderDTO
 import com.example.medicalinventoryadminspringboot.ResultState
 import com.example.medicalinventoryadminspringboot.model.Inventory
 import com.example.medicalinventoryadminspringboot.model.LoginRequest
@@ -33,7 +34,7 @@ class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
         Log.d("admin123", "${response.toString()} aaa ${response.isSuccessful.toString()}")
         return ResultState.Success(
             response.body() ?: Users(
-                0, "", "", "", Time(0), false, false, "", "", emptyList()
+                0, "", "", "", "", false, false, "", "", emptyList()
             )
         );
     }
@@ -78,7 +79,7 @@ class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
 
     }
 
-    suspend fun getAllOrders(): ResultState<List<Order>> {
+    suspend fun getAllOrders(): ResultState<List<OrderDTO>> {
         try {
             val response = apiServices.getAllOrders()
             return ResultState.Success(response.body() ?: emptyList())
@@ -110,6 +111,37 @@ class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
         } catch (e: Exception) {
             Log.e("UpdateUser", "Exception: ${e.message}")
             ResultState.Error(e.message ?: "Unknown error occurred")
+        }
+    }
+    suspend fun approveOrder(id: Int): ResultState<String> {
+        return try {
+            val response = apiServices.approveOrder(id)
+            if (response.isSuccessful) {
+                ResultState.Success(response.body()?.string() ?: "Order approved successfully")
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Server error during approval"
+                Log.e("ApproveOrder", "Server error: $errorMsg")
+                ResultState.Error(errorMsg)
+            }
+        } catch (e: Exception) {
+            Log.e("ApproveOrder", "Exception: ${e.message}")
+            ResultState.Error(e.message ?: "Unknown error during order approval")
+        }
+    }
+
+    suspend fun deleteOrder(id: Int): ResultState<String> {
+        return try {
+            val response = apiServices.deleteOrder(id)
+            if (response.isSuccessful) {
+                ResultState.Success(response.body()?.string() ?: "Order deleted successfully")
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Server error during deletion"
+                Log.e("DeleteOrder", "Server error: $errorMsg")
+                ResultState.Error(errorMsg)
+            }
+        } catch (e: Exception) {
+            Log.e("DeleteOrder", "Exception: ${e.message}")
+            ResultState.Error(e.message ?: "Unknown error during order deletion")
         }
     }
 

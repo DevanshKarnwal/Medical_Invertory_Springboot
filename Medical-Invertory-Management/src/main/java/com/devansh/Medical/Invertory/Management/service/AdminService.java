@@ -1,5 +1,7 @@
 package com.devansh.Medical.Invertory.Management.service;
 
+import com.devansh.Medical.Invertory.Management.DTO.OrderDTO;
+import com.devansh.Medical.Invertory.Management.mapper.OrderMapper;
 import com.devansh.Medical.Invertory.Management.models.*;
 import com.devansh.Medical.Invertory.Management.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -30,6 +33,9 @@ public class AdminService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private OrderMapper mapper;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -153,48 +159,59 @@ public class AdminService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product already exists");
         }
     }
-    public ResponseEntity<List<Orders>> getAllOrders(){
-            List<Orders> fetchOrder = orderRepository.findAll();
-            if(fetchOrder.isEmpty())
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
-            fetchOrder = fetchOrder.stream().filter(order -> !order.isApproved()).toList();
-            return ResponseEntity.status(HttpStatus.OK).body(fetchOrder);
+    public ResponseEntity<List<OrderDTO>> getAllOrders(){
+        List<OrderDTO> dtos = orderRepository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
 
 
     public ResponseEntity deleteOrders(int id) {
         orderRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Order deleted");
+        return ResponseEntity.noContent().build();
     }
 
     @Transactional
     public ResponseEntity approveOrder(int id) {
-        Optional<Orders> fetchedOrder = orderRepository.findById(id);
-        if (fetchedOrder.isEmpty()) {
+//        Optional<Orders> fetchedOrder = orderRepository.findById(id);
+//        if (fetchedOrder.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
+//        }
+//        Orders currentOrder = fetchedOrder.get();
+//        Product product = currentOrder.getProduct();
+//        int quantity = currentOrder.getQuantity();
+//        Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
+//
+//        if (inventoryOptional.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                    .body("Inventory not found for product: " + product.getName());
+//        }
+//        Inventory inventory = inventoryOptional.get();
+//
+//        if (inventory.getQuantity() < quantity) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not enough inventory to approve the order");
+//        }
+//        inventory.setQuantity(inventory.getQuantity() - quantity);
+//        currentOrder.setApproved(true);
+//        inventoryRepository.save(inventory);
+//        orderRepository.save(currentOrder);
+//
+//        UserStock toAdd = UserStock.builder().quantity(quantity).product(product).build();
+//        userStockRepository.save(toAdd);
+//        return ResponseEntity.ok("Order approved successfully");
+        Optional<Orders> optionalOrder = orderRepository.findById(id);
+
+        if (optionalOrder.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
         }
-        Orders currentOrder = fetchedOrder.get();
-        Product product = currentOrder.getProduct();
-        int quantity = currentOrder.getQuantity();
-        Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
 
-        if (inventoryOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Inventory not found for product: " + product.getName());
-        }
-        Inventory inventory = inventoryOptional.get();
+        Orders order = optionalOrder.get();
+        order.setApproved(true);
+        orderRepository.save(order);
 
-        if (inventory.getQuantity() < quantity) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not enough inventory to approve the order");
-        }
-        inventory.setQuantity(inventory.getQuantity() - quantity);
-        currentOrder.setApproved(true);
-        inventoryRepository.save(inventory);
-        orderRepository.save(currentOrder);
-
-        UserStock toAdd = UserStock.builder().quantity(quantity).product(product).build();
-        userStockRepository.save(toAdd);
         return ResponseEntity.ok("Order approved successfully");
 
     }

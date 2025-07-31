@@ -8,7 +8,7 @@ data class Users(
     var name: String,
     var email: String = "",
     var password: String,
-    val creationTime: Time?,
+    val creationTime: String?="",
     var isBlocked: Boolean,
     var isWaiting: Boolean,
     var number: String? = null,

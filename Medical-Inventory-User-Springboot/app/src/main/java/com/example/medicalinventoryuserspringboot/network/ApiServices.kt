@@ -2,6 +2,7 @@ package com.example.medicalinventoryuserspringboot.network
 
 
 import com.example.medicalinventoryuserspringboot.model.LoginRequest
+import com.example.medicalinventoryuserspringboot.model.Product
 import com.example.medicalinventoryuserspringboot.model.Users
 import retrofit2.Response
 import retrofit2.http.Body
@@ -26,5 +27,7 @@ interface ApiServices {
     @GET("admin/userName")
     suspend fun getUser(@Query("name") name: String): Response<Users>
 
+    @GET("user/products")
+    suspend fun getAllProducts() : Response<List<Product>>
 
 }

@@ -3,6 +3,7 @@ package com.example.medicalinventoryuserspringboot.repo
 import android.util.Log
 import com.example.medicalinventoryuserspringboot.ResultState
 import com.example.medicalinventoryuserspringboot.model.LoginRequest
+import com.example.medicalinventoryuserspringboot.model.Product
 import com.example.medicalinventoryuserspringboot.model.Users
 import com.example.medicalinventoryuserspringboot.network.ApiServices
 import jakarta.inject.Inject
@@ -45,6 +46,16 @@ class UserRepo @Inject constructor(private val apiServices: ApiServices)  {
                 0, "", "", "", "", false, false, "", "", emptyList()
             )
         )
+    }
+
+    suspend fun getAllProducts(): ResultState<List<Product>> {
+        try {
+            val response = apiServices.getAllProducts()
+            Log.d("product123", "${response.isSuccessful}  ${response.body()}")
+            return ResultState.Success(response.body() ?: emptyList())
+        } catch (e: Exception) {
+            return ResultState.Error(e.message ?: "Unknown error occurred")
+        }
     }
 
 }

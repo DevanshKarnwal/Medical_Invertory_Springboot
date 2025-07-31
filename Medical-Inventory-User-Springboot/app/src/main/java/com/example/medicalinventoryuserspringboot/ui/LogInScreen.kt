@@ -55,7 +55,7 @@ fun LogInScreen(
         }
     }
     when{
-        userView.value.isSuccessful.name.length>1 -> navController.navigate(Routes.Stock)
+        userView.value.isSuccessful.name.length>1 -> navController.navigate(Routes.AllProducts)
     }
 
     Box(

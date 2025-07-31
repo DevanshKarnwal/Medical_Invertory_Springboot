@@ -45,10 +45,10 @@ fun Navigation(adminViewModel: UserViewModel = hiltViewModel<UserViewModel>()) {
     )
     var index by remember { mutableStateOf(0) }
     val bottomNavItems = listOf(
-        BottomNavItem("Stock", Icons.Default.Inventory),
+        BottomNavItem("Products", Icons.Default.Inventory),
         BottomNavItem("Orders", Icons.Default.ShoppingCart),
-        BottomNavItem("SellHistory", Icons.Default.History),
-        BottomNavItem("UserDetails", Icons.Default.AccountCircle)
+        BottomNavItem("Sell History", Icons.Default.History),
+        BottomNavItem("User Details", Icons.Default.AccountCircle)
     )
 
     Scaffold(
@@ -69,7 +69,7 @@ fun Navigation(adminViewModel: UserViewModel = hiltViewModel<UserViewModel>()) {
                                 index = current
 
                                 when (index) {
-                                    0 -> navController.navigate(Routes.Stock)
+                                    0 -> navController.navigate(Routes.AllProducts)
                                     1 -> navController.navigate(Routes.Orders)
                                     2 -> navController.navigate(Routes.SellHistory)
                                     3 -> navController.navigate(Routes.UserDetails)
@@ -96,16 +96,16 @@ fun Navigation(adminViewModel: UserViewModel = hiltViewModel<UserViewModel>()) {
             }
 
             composable<Routes.SellHistory> {
-
-            }
-            composable<Routes.Stock> {
-
+                SellHistory()
             }
             composable<Routes.Orders> {
-
+                OrderScreen()
+            }
+            composable<Routes.AllProducts> {
+                AllProductScreen()
             }
             composable<Routes.UserDetails> {
-
+                UserDetails()
             }
 
         }

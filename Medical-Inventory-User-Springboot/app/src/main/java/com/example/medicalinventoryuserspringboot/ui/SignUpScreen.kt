@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -96,7 +97,6 @@ fun SignUpScreen(userViewModel: UserViewModel = hiltViewModel(), navController: 
             Text(
                 text = "Welcome 👋",
                 style = MaterialTheme.typography.headlineMedium.copy(color = Color.White),
-                modifier = Modifier.padding(top = 16.dp)
             )
             Text(
                 text = "Please create an account to continue",
@@ -113,6 +113,8 @@ fun SignUpScreen(userViewModel: UserViewModel = hiltViewModel(), navController: 
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            Spacer(modifier = Modifier.height(15.dp))
 
             OutlinedTextField(
                 value = name,
@@ -206,7 +208,7 @@ fun SignUpScreen(userViewModel: UserViewModel = hiltViewModel(), navController: 
             ) {
                 Text(
                     text = "Already have an account? Log in",
-                    color = Color(0xFF6A63F6) // same purple color for consistency
+                    color = Color(0xFF6A63F6)
                 )
             }
         }

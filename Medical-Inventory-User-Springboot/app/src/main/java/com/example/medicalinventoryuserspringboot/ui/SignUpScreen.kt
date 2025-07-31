@@ -41,7 +41,7 @@ import com.example.medicalinventoryuserspringboot.model.Users
 import com.example.medicalinventoryuserspringboot.viewModel.UserViewModel
 
 @Composable
-fun SignUpScreen(userViewModel: UserViewModel = hiltViewModel(),navController: NavHostController) {
+fun SignUpScreen(userViewModel: UserViewModel = hiltViewModel(), navController: NavHostController) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -68,10 +68,11 @@ fun SignUpScreen(userViewModel: UserViewModel = hiltViewModel(),navController: N
         pincode.length == 6 && pincode.all { it.isDigit() }
     }
 
-    val isFormValid = isNameValid && isEmailValid && isPasswordValid && isNumberValid && isPincodeValid
+    val isFormValid =
+        isNameValid && isEmailValid && isPasswordValid && isNumberValid && isPincodeValid
 
     var createAccountView = userViewModel.createAccountView.collectAsState()
-    when{
+    when {
         createAccountView.value.isSuccessful.isNotBlank() -> navController.navigate(Routes.LogInScreen)
         createAccountView.value.isError.isNotBlank() -> {
             Text(text = createAccountView.value.isError)
@@ -181,7 +182,13 @@ fun SignUpScreen(userViewModel: UserViewModel = hiltViewModel(),navController: N
 
             Button(
                 onClick = {
-                    val user = Users(name = name, email = email, password = password, number = number, pincode = pincode)
+                    val user = Users(
+                        name = name,
+                        email = email,
+                        password = password,
+                        number = number,
+                        pincode = pincode,
+                    )
                     userViewModel.createUser(user)
                 },
                 enabled = isFormValid,

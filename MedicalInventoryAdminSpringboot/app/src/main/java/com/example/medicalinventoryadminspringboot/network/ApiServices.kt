@@ -43,11 +43,6 @@ interface ApiServices {
     @GET("admin/orders")
     suspend fun getAllOrders() : Response<List<OrderDTO>>
 
-    @PUT("admin/orders")
-    suspend fun approveOrder(@Query("id") id: Int): Response<ResponseBody>
-
-    @DELETE("admin/orders")
-    suspend fun deleteOrder(@Query("id") id: Int): Response<ResponseBody>
 
     @GET("admin/inventoryProduct")
     suspend fun getInventoryByProductId(@Query("id") id: String) : Response<Inventory>

@@ -7,6 +7,7 @@ import com.example.medicalinventoryuserspringboot.model.Users
 import com.example.medicalinventoryuserspringboot.network.ApiServices
 import jakarta.inject.Inject
 import java.net.HttpURLConnection
+import kotlin.toString
 
 class UserRepo @Inject constructor(private val apiServices: ApiServices)  {
 
@@ -37,18 +38,13 @@ class UserRepo @Inject constructor(private val apiServices: ApiServices)  {
     }
 
     suspend fun getUser(name: String): ResultState<Users> {
-        val response = apiServices.getUser(name);
+        val response = apiServices.getUser(name)
         Log.d("admin123", "${response.toString()} aaa ${response.isSuccessful.toString()}")
         return ResultState.Success(
             response.body() ?: Users(
-                name="",
-                password = "",
-                isBlocked = false,
-                isWaiting = false,
-                number = "",
-                pincode = "",
+                0, "", "", "", "", false, false, "", "", emptyList()
             )
-        );
+        )
     }
 
 }

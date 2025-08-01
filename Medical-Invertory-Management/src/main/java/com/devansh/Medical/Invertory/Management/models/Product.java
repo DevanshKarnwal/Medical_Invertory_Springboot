@@ -37,7 +37,7 @@ public class Product {
     @OneToOne(mappedBy = "product",cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JsonManagedReference("product-inventory")
     private Inventory inventory;
-    @OneToOne(mappedBy = "product",cascade = {CascadeType.MERGE},orphanRemoval = true)
-    private UserStock userStock;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserStock> userStocks = new ArrayList<>();
 
 }

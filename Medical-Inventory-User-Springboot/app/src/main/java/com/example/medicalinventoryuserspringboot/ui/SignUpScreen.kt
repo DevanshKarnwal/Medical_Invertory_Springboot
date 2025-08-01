@@ -190,6 +190,8 @@ fun SignUpScreen(userViewModel: UserViewModel = hiltViewModel(), navController: 
                         password = password,
                         number = number,
                         pincode = pincode,
+                        isBlocked = true,
+                        isWaiting = true,
                     )
                     userViewModel.createUser(user)
                 },

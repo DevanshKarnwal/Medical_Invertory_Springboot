@@ -1,6 +1,8 @@
 package com.devansh.Medical.Invertory.Management.service;
 
 import com.devansh.Medical.Invertory.Management.DTO.OrderDTO;
+import com.devansh.Medical.Invertory.Management.DTO.ProductDTO;
+import com.devansh.Medical.Invertory.Management.DTO.UserDTO;
 import com.devansh.Medical.Invertory.Management.mapper.OrderMapper;
 import com.devansh.Medical.Invertory.Management.models.*;
 import com.devansh.Medical.Invertory.Management.repository.*;
@@ -29,7 +31,8 @@ public class AdminService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private UserStockRepository userStockRepository;
+    private UserStockRepository userStockRepository;@Autowired
+    private SalesHistoryRepository salesHistoryRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -40,8 +43,22 @@ public class AdminService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public List<Users> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> UserDTO.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .password(user.getPassword())
+                        .isWaiting(user.isWaiting())
+                        .isBlocked(user.isBlocked())
+                        .role(user.getRole())
+                        .creationDate(user.getCreationDate())
+                        .number(user.getNumber())
+                        .pincode(user.getPincode())
+                        .build())
+                .collect(Collectors.toList());
     }
     public ResponseEntity getSpecificUserByName(String name) {
         Users byName = userRepository.findByName(name);
@@ -68,17 +85,13 @@ public class AdminService {
         userRepository.save(current);
         return Optional.of(current);
     }
-
+    @Transactional
     public Optional<Users> blockUser(int id) {
-        Optional<Users>user = getSpecificUser(id);
-        if (user.isEmpty())
+        return userRepository.findById(id).map(user -> {
+            user.setBlocked(true);
             return user;
-        Users current = user.get();
-        current.setBlocked(true);
-        userRepository.save(current);
-        return Optional.of(current);
+        });
     }
-
     public Optional<Users> getSpecificUser(int id) {
         return userRepository.findById(id);
     }
@@ -87,12 +100,25 @@ public class AdminService {
         productRepository.save(product);
         return ResponseEntity.status(HttpStatus.OK).body("Product created");
     }
-    public ResponseEntity getAllProducts() {
-        List<Product> fetchedProduct = productRepository.findAll();
-        if(fetchedProduct.isEmpty())
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
-        return ResponseEntity.status(HttpStatus.OK).body(fetchedProduct);
+    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+
+        List<ProductDTO> productDTOs = products.stream()
+                .map(product -> ProductDTO.builder()
+                        .id(product.getId())
+                        .productId(product.getProductId())
+                        .name(product.getName())
+                        .price(product.getPrice())
+                        .category(product.getCategory()) // Assuming this is a String
+                        .build())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(productDTOs);
     }
+
 
     public ResponseEntity getSpecificProduct(int id) {
         Optional<Product> fetchedProduct = productRepository.findById(id);
@@ -175,33 +201,7 @@ public class AdminService {
     }
 
     @Transactional
-    public ResponseEntity approveOrder(int id) {
-//        Optional<Orders> fetchedOrder = orderRepository.findById(id);
-//        if (fetchedOrder.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
-//        }
-//        Orders currentOrder = fetchedOrder.get();
-//        Product product = currentOrder.getProduct();
-//        int quantity = currentOrder.getQuantity();
-//        Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
-//
-//        if (inventoryOptional.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                    .body("Inventory not found for product: " + product.getName());
-//        }
-//        Inventory inventory = inventoryOptional.get();
-//
-//        if (inventory.getQuantity() < quantity) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not enough inventory to approve the order");
-//        }
-//        inventory.setQuantity(inventory.getQuantity() - quantity);
-//        currentOrder.setApproved(true);
-//        inventoryRepository.save(inventory);
-//        orderRepository.save(currentOrder);
-//
-//        UserStock toAdd = UserStock.builder().quantity(quantity).product(product).build();
-//        userStockRepository.save(toAdd);
-//        return ResponseEntity.ok("Order approved successfully");
+    public ResponseEntity<?> approveOrder(int id) {
         Optional<Orders> optionalOrder = orderRepository.findById(id);
 
         if (optionalOrder.isEmpty()) {
@@ -209,11 +209,39 @@ public class AdminService {
         }
 
         Orders order = optionalOrder.get();
+        Product product = order.getProduct();
+
+        Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
+        if (inventoryOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Inventory not found for product: " + product.getName());
+        }
+
+        Inventory inventory = inventoryOptional.get();
+
+        if (inventory.getQuantity() < order.getQuantity()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not enough inventory to approve the order");
+        }
+
+        inventory.setQuantity(inventory.getQuantity() - order.getQuantity());
+        inventoryRepository.save(inventory);
+
+        SalesHistory history = SalesHistory.builder()
+                .productName(product.getName())
+                .userName(order.getUser().getName())
+                .quantity(order.getQuantity())
+                .price(order.getPrice())
+                .sold(true)
+                .purchased(false)
+                .deleted(false)
+                .build();
+
+        salesHistoryRepository.save(history);
+
         order.setApproved(true);
         orderRepository.save(order);
 
-        return ResponseEntity.ok("Order approved successfully");
-
+        return ResponseEntity.ok(order);
     }
 
 

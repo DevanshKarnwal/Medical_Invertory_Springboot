@@ -1,5 +1,6 @@
 package com.example.medicalinventoryuserspringboot.ui
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +39,7 @@ import com.example.medicalinventoryuserspringboot.viewModel.UserViewModel
 
 @Composable
 fun LogInScreen(
-    userViewModel: UserViewModel = hiltViewModel<UserViewModel>(),
+    userViewModel: UserViewModel,
     navController: NavHostController
 ) {
 
@@ -54,9 +56,24 @@ fun LogInScreen(
             Toast.makeText(context, logInview.value.isError, Toast.LENGTH_LONG).show()
         }
     }
-    when{
-        userView.value.isSuccessful.name.length>1 -> navController.navigate(Routes.AllProducts)
+    val user = userView.value.isSuccessful
+    val loginSuccess = logInview.value.isSuccessful
+    val fetchedUser = userView.value.isSuccessful
+    val loggedInUsername = userViewModel.loggedInUsername
+    LaunchedEffect(loginSuccess, fetchedUser, loggedInUsername) {
+        if (
+            loginSuccess.isNotEmpty() &&
+            fetchedUser != null &&
+            fetchedUser.id != null && fetchedUser.id != 0 &&
+            !loggedInUsername.isNullOrEmpty()
+        ) {
+            Log.d("LoginScreen", "✅ All conditions met. Navigating to OrderScreen.")
+            navController.navigate(Routes.AllProducts)
+        } else {
+            Log.d("LoginScreen", "⏳ Waiting for user data. Success=$loginSuccess, user=${fetchedUser?.id}, username=$loggedInUsername")
+        }
     }
+
 
     Box(
         modifier = Modifier

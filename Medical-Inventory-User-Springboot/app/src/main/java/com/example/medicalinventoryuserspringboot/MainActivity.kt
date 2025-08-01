@@ -13,9 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import com.example.medicalinventoryuserspringboot.ui.Navigation
 import com.example.medicalinventoryuserspringboot.ui.theme.MedicalInventoryUserSpringbootTheme
+import com.example.medicalinventoryuserspringboot.viewModel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -24,9 +28,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val userViewModel: UserViewModel = hiltViewModel()
             MedicalInventoryUserSpringbootTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Navigation()
+                    Navigation(userViewModel)
                 }
             }
         }

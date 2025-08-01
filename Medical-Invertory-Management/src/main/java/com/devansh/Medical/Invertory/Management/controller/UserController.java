@@ -1,13 +1,22 @@
 package com.devansh.Medical.Invertory.Management.controller;
 
+import com.devansh.Medical.Invertory.Management.DTO.OrderDTO;
+import com.devansh.Medical.Invertory.Management.DTO.PlaceOrderRequest;
+import com.devansh.Medical.Invertory.Management.DTO.ProductDTO;
+import com.devansh.Medical.Invertory.Management.DTO.UserStockDTO;
 import com.devansh.Medical.Invertory.Management.models.Orders;
+import com.devansh.Medical.Invertory.Management.models.Product;
 import com.devansh.Medical.Invertory.Management.models.UserStock;
 import com.devansh.Medical.Invertory.Management.models.Users;
 import com.devansh.Medical.Invertory.Management.service.AdminService;
 import com.devansh.Medical.Invertory.Management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("user")
@@ -17,6 +26,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private AdminService adminService;
+
+
 
     @GetMapping("/userName")
     public ResponseEntity getSpecificUserByName(@RequestParam String name){
@@ -68,4 +79,23 @@ public class UserController {
         return userService.salesHistory();
     }
 
+    @GetMapping("/user-stock")
+    public ResponseEntity<List<UserStockDTO>> getUserStock(@RequestParam int userId) {
+        List<UserStockDTO> stocks = userService.getStockByUserId(userId);
+        return ResponseEntity.ok(stocks);
+    }
+    @PostMapping("/order/place")
+    public ResponseEntity<?> placeOrder(@RequestBody PlaceOrderRequest request) {
+        try {
+            OrderDTO orderDTO = userService.placeOrder(request);
+            return ResponseEntity.ok(orderDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    @GetMapping("/products/all")
+    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+        return userService.getAllProducts();
+
+    }
 }

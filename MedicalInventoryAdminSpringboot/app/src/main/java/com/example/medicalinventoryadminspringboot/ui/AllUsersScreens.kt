@@ -28,12 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.medicalinventoryadminspringboot.Dto.UserSummary
 import com.example.medicalinventoryadminspringboot.model.Users
 import com.example.medicalinventoryadminspringboot.viewModel.AdminViewModel
 
 @Composable
-fun AllUsersScreens(viewModel: AdminViewModel = hiltViewModel<AdminViewModel>(),) {
+fun AllUsersScreens(viewModel: AdminViewModel ) {
     val usersState = viewModel.getAllUsers.collectAsState()
     LaunchedEffect(Unit)
     {
@@ -60,9 +60,9 @@ fun AllUsersScreens(viewModel: AdminViewModel = hiltViewModel<AdminViewModel>(),
 
 @Composable
 fun UserListScreen(
-    users: List<Users>,
-    onToggleBlocked: (Users) -> Unit,
-    onToggleWaiting: (Users) -> Unit
+    users: List<UserSummary>,
+    onToggleBlocked: (UserSummary) -> Unit,
+    onToggleWaiting: (UserSummary) -> Unit
 ) {
     LazyColumn {
         items(users) { user ->
@@ -77,9 +77,9 @@ fun UserListScreen(
 
 @Composable
 fun UserCard(
-    user: Users,
-    onToggleBlocked: (Users) -> Unit,
-    onToggleWaiting: (Users) -> Unit
+    user: UserSummary,
+    onToggleBlocked: (UserSummary) -> Unit,
+    onToggleWaiting: (UserSummary) -> Unit
 ) {
     val initials = user.name.split(" ").let {
         (it.getOrNull(0)?.firstOrNull()?.toString() ?: "") +

@@ -23,7 +23,7 @@ import com.example.medicalinventoryadminspringboot.Dto.OrderDTO
 import com.example.medicalinventoryadminspringboot.viewModel.AdminViewModel
 
 @Composable
-fun AllOrdersScreen(viewModel: AdminViewModel = hiltViewModel()) {
+fun AllOrdersScreen(viewModel: AdminViewModel ) {
     val orderState = viewModel.getAllOrders.collectAsState()
 
     LaunchedEffect(Unit) {

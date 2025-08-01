@@ -1,6 +1,7 @@
 package com.example.medicalinventoryadminspringboot.network
 
 import com.example.medicalinventoryadminspringboot.Dto.OrderDTO
+import com.example.medicalinventoryadminspringboot.Dto.UserSummary
 import com.example.medicalinventoryadminspringboot.model.Inventory
 import com.example.medicalinventoryadminspringboot.model.LoginRequest
 import com.example.medicalinventoryadminspringboot.model.Order
@@ -29,7 +30,7 @@ interface ApiServices {
     suspend fun getAdminUser(@Query("name") name :String) : Response<Users>
 
     @GET("admin/users")
-    suspend fun getAllUser() : Response<List<Users>>
+    suspend fun getAllUser() : Response<List<UserSummary>>
 
     @GET("admin/products")
     suspend fun getAllProducts() : Response<List<Product>>
@@ -56,5 +57,7 @@ interface ApiServices {
     @DELETE("admin/orders")
     suspend fun deleteOrder(@Query("id") id: Int): Response<ResponseBody>
 
+    @POST("/admin/userBlock")
+    suspend fun blockUser(@Query("id") id : Int): Response<ResponseBody>
 
 }

@@ -37,7 +37,7 @@ import com.example.medicalinventoryadminspringboot.viewModel.AdminViewModel
 
 @Composable
 fun LogInScreen(
-    adminViewModel: AdminViewModel = hiltViewModel<AdminViewModel>(),
+    adminViewModel: AdminViewModel,
     navController: NavHostController
 ) {
 

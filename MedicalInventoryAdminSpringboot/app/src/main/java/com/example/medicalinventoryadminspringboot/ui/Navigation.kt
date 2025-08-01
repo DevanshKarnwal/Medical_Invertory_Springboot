@@ -52,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -196,19 +197,19 @@ fun Navigation(adminViewModel: AdminViewModel = hiltViewModel<AdminViewModel>())
                 modifier = Modifier.padding(it)
             ) {
                 composable<Routes.LogInScreen> {
-                    LogInScreen(navController = navController)
+                    LogInScreen(navController = navController,adminViewModel = adminViewModel)
                 }
                 composable<Routes.Dashboard> {
-                    DashboardScreen()
+                    DashboardScreen(adminViewModel = adminViewModel)
                 }
                 composable<Routes.AllUsers> {
-                    AllUsersScreens()
+                    AllUsersScreens(viewModel =adminViewModel)
                 }
                 composable<Routes.AllProducts> {
-                    AllProductsScreen()
+                    AllProductsScreen(adminViewModel=adminViewModel)
                 }
                 composable<Routes.AllOrders> {
-                    AllOrdersScreen()
+                    AllOrdersScreen(viewModel=adminViewModel)
                 }
 
 

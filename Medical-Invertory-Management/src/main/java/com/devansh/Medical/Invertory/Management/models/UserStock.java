@@ -22,7 +22,11 @@ public class UserStock {
     @Id
     private int Id;
     private int quantity;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private Users user;
 }

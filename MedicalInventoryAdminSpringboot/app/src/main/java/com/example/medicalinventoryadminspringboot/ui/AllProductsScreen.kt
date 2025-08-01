@@ -1,5 +1,6 @@
 package com.example.medicalinventoryadminspringboot.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +32,7 @@ import com.example.medicalinventoryadminspringboot.model.Product
 import com.example.medicalinventoryadminspringboot.viewModel.AdminViewModel
 
 @Composable
-fun AllProductsScreen(adminViewModel: AdminViewModel = hiltViewModel() ) {
+fun AllProductsScreen(adminViewModel: AdminViewModel  ) {
         val productView = adminViewModel.getAllProducts.collectAsState()
         val  getAllInventory= adminViewModel.getAllInventory.collectAsState()
     LaunchedEffect(Unit) {
@@ -42,7 +43,9 @@ fun AllProductsScreen(adminViewModel: AdminViewModel = hiltViewModel() ) {
 
         items(productView.value.isSuccessful) {
             item->
-                var inventory =0
+            Log.d("product" ,"${item.name}")
+
+            var inventory =0
                 if(getAllInventory.value.isSuccessful.isNotEmpty()){
                     inventory = getAllInventory.value.isSuccessful.filter { it.product == item.id }.size
                 }

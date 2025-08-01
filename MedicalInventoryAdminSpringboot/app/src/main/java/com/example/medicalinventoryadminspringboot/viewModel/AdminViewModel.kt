@@ -4,22 +4,21 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.medicalinventoryadminspringboot.Dto.OrderDTO
+import com.example.medicalinventoryadminspringboot.Dto.UserSummary
+import com.example.medicalinventoryadminspringboot.Dto.toUsers
 import com.example.medicalinventoryadminspringboot.ResultState
 import com.example.medicalinventoryadminspringboot.model.Inventory
-import com.example.medicalinventoryadminspringboot.model.Order
 import com.example.medicalinventoryadminspringboot.model.Product
 import com.example.medicalinventoryadminspringboot.model.Users
+import com.example.medicalinventoryadminspringboot.model.getCurrentDate
+import com.example.medicalinventoryadminspringboot.model.toUserSummary
 import com.example.medicalinventoryadminspringboot.repository.AdminRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
-import retrofit2.Response
-import java.sql.Time
 
 @HiltViewModel
 class AdminViewModel @Inject constructor(val adminRepo: AdminRepo) : ViewModel() {
@@ -173,26 +172,26 @@ class AdminViewModel @Inject constructor(val adminRepo: AdminRepo) : ViewModel()
         }
     }
 
-    fun toggleBlock(user: Users) {
-        val updatedUser =
-            user.copy(isBlocked = !user.isBlocked, creationTime = user.creationTime ?: "")
-        updateUserOnServer(updatedUser)
+    fun toggleBlock(user: UserSummary) {
+        val updatedUser = user.copy(isBlocked = !user.isBlocked)
+        updateUserOnServer(updatedUser.toUsers())
+
     }
 
-    fun toggleWaiting(user: Users) {
-        val updatedUser =
-            user.copy(isWaiting = !user.isWaiting, creationTime = user.creationTime ?: "")
-        updateUserOnServer(updatedUser)
+    fun toggleWaiting(user: UserSummary) {
+        val updatedUser = user.copy(isWaiting = !user.isWaiting, )
+        updateUserOnServer(updatedUser.toUsers())
     }
 
     fun updateUserOnServer(user: Users) {
         viewModelScope.launch {
             when (val result = adminRepo.updateUserBlockAndWaiting(user)) {
                 is ResultState.Success -> {
+                    val updatedUser = user.toUserSummary()
                     val currentList = _getAllUsers.value.isSuccessful.toMutableList()
-                    val index = currentList.indexOfFirst { it.id == user.id }
+                    val index = currentList.indexOfFirst { it.id == updatedUser.id }
                     if (index != -1) {
-                        currentList[index] = user
+                        currentList[index] = updatedUser // ✅ now it matches
                         _getAllUsers.value = _getAllUsers.value.copy(isSuccessful = currentList)
                     }
                 }
@@ -207,6 +206,7 @@ class AdminViewModel @Inject constructor(val adminRepo: AdminRepo) : ViewModel()
             }
         }
     }
+
     fun getAllOrders() {
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = adminRepo.getAllOrders()) {
@@ -267,7 +267,7 @@ data class LogInAdminView(
 )
 
 data class GetAllUsers(
-    var isSuccessful: List<Users> = emptyList(),
+    var isSuccessful: List<UserSummary> = emptyList(),
     var isError: String = ""
 )
 

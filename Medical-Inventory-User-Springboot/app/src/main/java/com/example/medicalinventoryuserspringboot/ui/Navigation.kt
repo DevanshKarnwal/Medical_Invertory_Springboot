@@ -35,7 +35,7 @@ import com.example.medicalinventoryuserspringboot.viewModel.UserViewModel
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Navigation(adminViewModel: UserViewModel = hiltViewModel<UserViewModel>()) {
+fun Navigation(userViewModel: UserViewModel = hiltViewModel<UserViewModel>()) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
@@ -45,9 +45,8 @@ fun Navigation(adminViewModel: UserViewModel = hiltViewModel<UserViewModel>()) {
     )
     var index by remember { mutableStateOf(0) }
     val bottomNavItems = listOf(
-        BottomNavItem("Products", Icons.Default.Inventory),
+        BottomNavItem("Stock", Icons.Default.Inventory),
         BottomNavItem("Orders", Icons.Default.ShoppingCart),
-        BottomNavItem("Sell History", Icons.Default.History),
         BottomNavItem("User Details", Icons.Default.AccountCircle)
     )
 
@@ -71,8 +70,7 @@ fun Navigation(adminViewModel: UserViewModel = hiltViewModel<UserViewModel>()) {
                                 when (index) {
                                     0 -> navController.navigate(Routes.AllProducts)
                                     1 -> navController.navigate(Routes.Orders)
-                                    2 -> navController.navigate(Routes.SellHistory)
-                                    3 -> navController.navigate(Routes.UserDetails)
+                                    2 -> navController.navigate(Routes.UserDetails)
                                 }
                             },
                             icon = { Icon(item.icon, contentDescription = item.name) },
@@ -89,23 +87,20 @@ fun Navigation(adminViewModel: UserViewModel = hiltViewModel<UserViewModel>()) {
             modifier = Modifier.padding(it)
         ) {
             composable<Routes.LogInScreen> {
-                LogInScreen(navController = navController)
+                LogInScreen(navController = navController,userViewModel = userViewModel)
             }
             composable<Routes.SignUp> {
-                SignUpScreen(navController = navController)
+                SignUpScreen(navController = navController,userViewModel = userViewModel)
             }
 
-            composable<Routes.SellHistory> {
-                SellHistory()
-            }
             composable<Routes.Orders> {
-                OrderScreen()
+                OrderScreen(navController = navController,userViewModel = userViewModel)
             }
             composable<Routes.AllProducts> {
-                AllProductScreen()
+                AllProductScreen(navController = navController, viewModel = userViewModel)
             }
             composable<Routes.UserDetails> {
-                UserDetails()
+                UserDetails(navController = navController,userViewModel = userViewModel)
             }
 
         }

@@ -27,7 +27,7 @@ import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DashboardScreen(adminViewModel: AdminViewModel = hiltViewModel()) {
+fun DashboardScreen(adminViewModel: AdminViewModel ) {
     val productView = adminViewModel.getAllProducts.collectAsState()
     val userView = adminViewModel.getAllUsers.collectAsState()
     val inventoryView = adminViewModel.getAllInventory.collectAsState()

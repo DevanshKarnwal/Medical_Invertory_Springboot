@@ -37,6 +37,13 @@ public class OrderMapper {
             userDTO.setId(user.getId());
             userDTO.setName(user.getName());
             userDTO.setEmail(user.getEmail());
+            userDTO.setWaiting(user.isWaiting());
+            userDTO.setBlocked(user.isBlocked());
+            userDTO.setRole(user.getRole());
+            userDTO.setCreationDate(user.getCreationDate());
+            userDTO.setPassword(user.getPassword());
+            userDTO.setPincode(user.getPincode());
+            userDTO.setNumber(user.getNumber());
             dto.setUser(userDTO);
         }
 

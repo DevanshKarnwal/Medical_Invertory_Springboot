@@ -2,6 +2,7 @@ package com.example.medicalinventoryadminspringboot.repository
 
 import android.util.Log
 import com.example.medicalinventoryadminspringboot.Dto.OrderDTO
+import com.example.medicalinventoryadminspringboot.Dto.UserSummary
 import com.example.medicalinventoryadminspringboot.ResultState
 import com.example.medicalinventoryadminspringboot.model.Inventory
 import com.example.medicalinventoryadminspringboot.model.LoginRequest
@@ -39,7 +40,7 @@ class AdminRepo @Inject constructor(private val apiServices: ApiServices) {
         );
     }
 
-    suspend fun getAllUser(): ResultState<List<Users>> {
+    suspend fun getAllUser(): ResultState<List<UserSummary>> {
         try {
             val response = apiServices.getAllUser()
             return ResultState.Success(response.body() ?: emptyList())

@@ -1,9 +1,8 @@
 package com.devansh.Medical.Invertory.Management.controller;
 
-import com.devansh.Medical.Invertory.Management.models.Inventory;
-import com.devansh.Medical.Invertory.Management.models.Product;
-import com.devansh.Medical.Invertory.Management.models.SalesHistory;
-import com.devansh.Medical.Invertory.Management.models.Users;
+import com.devansh.Medical.Invertory.Management.DTO.ProductDTO;
+import com.devansh.Medical.Invertory.Management.DTO.UserDTO;
+import com.devansh.Medical.Invertory.Management.models.*;
 import com.devansh.Medical.Invertory.Management.repository.UserStockRepository;
 import com.devansh.Medical.Invertory.Management.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +33,11 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<Users>> getAllUsers(){
-        List<Users> usersFetched = adminService.getAllUsers();
-        if(usersFetched.isEmpty())
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> usersFetched = adminService.getAllUsers();
+        if (usersFetched.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
         return ResponseEntity.status(HttpStatus.OK).body(usersFetched);
     }
 
@@ -76,7 +76,7 @@ public class AdminController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getAllProducts(){
+    public ResponseEntity<List<ProductDTO>> getAllProducts(){
        return adminService.getAllProducts();
     }
     @GetMapping("/product")
@@ -127,19 +127,26 @@ public class AdminController {
         return adminService.deleteOrders(id);
     }
 
-    @Transactional
     @PutMapping("/orders")
-    public ResponseEntity approveOrder(@RequestParam int id){
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        SalesHistory salesHistory = SalesHistory.builder()
-                .userName(userName)
-                .price(0)
-                .purchased(true)
-                .quantity(userStockRepository.findById(id).get().getQuantity())
-                .productName(userStockRepository.findById(id).get().getProduct().getName())
-                .build();
-        return adminService.approveOrder(id);
+    public ResponseEntity<?> approveOrder(@RequestParam int id) {
+        ResponseEntity<?> response = adminService.approveOrder(id);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Orders approvedOrder = (Orders) response.getBody();
+
+            // Create UserStock entry after successful approval
+            UserStock userStock = UserStock.builder()
+                    .product(approvedOrder.getProduct())
+                    .quantity(approvedOrder.getQuantity())
+                    .user(approvedOrder.getUser())
+                    .build();
+
+            userStockRepository.save(userStock);
+        }
+
+        return response;
     }
+
 
 
 }
